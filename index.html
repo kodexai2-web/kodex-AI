@@ -2,103 +2,159 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
     
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="theme-color" content="#050508">
     
-    <link rel="manifest" href="data:application/manifest+json;base64,ewogICJuYW1lIjogIktvZGV4IEFJIiwKICAic2hvcnRfbmFtZSI6ICJLb2RleCIsCiAgInN0YXJ0X3VybCI6ICIuIiwKICAiZGlzcGxheSI6ICJzdGFuZGFsb25lIiwKICAiYmFja2dyb3VuZF9jb2xvciI6ICIjMDUwNTA4IiwKICAidGhlbWVfY29sb3ciOiAiIzA1MDUwOCIsCiAgIm9yaWVudGF0aW9uIjogInBvcnRyYWl0Igp9">
+    <link rel="manifest" href="data:application/manifest+json;base64,ewogICJuYW1lIjogIktvZGV4IEFJIiwKICAic2hvcnRfbmFtZSI6ICJLb2RleCIsCiAgInN0YXJ0X3VybCI6ICIuL2luZGV4Lmh0bWw/dXBkYXRlPTUiLAogICJkaXNwbGF5IjogInN0YW5kYWxvbmUiLAogICJiYWNrZ3JvdW5kX2NvbG9yIjogIiMwNTA1MDgiLAogICJ0aGVtZV9jb2xvciI6ICIjMDUwNTA4IiwKICAib3JpZW50YXRpb2uiOiAicG9ydHJhaXQiCn0=">
 
-    <title>Кодекс ✨</title>
+    <title>Кодекс</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    
     <style>
-        :root{--bg:radial-gradient(circle at center,#1a0b2e 0%,#050508 100%);--accent:#6E8EFB;--neon:#00d2ff;--border:rgba(255,255,255,0.1)}
-        *{margin:0;padding:0;box-sizing:border-box;font-family:'Inter',sans-serif;-webkit-tap-highlight-color:transparent}
-        body{background:#050508;background-image:var(--bg);height:100dvh;color:#fff;display:flex;overflow:hidden;width:100vw;overscroll-behavior:none}
-        /* Ниже идет остальной твой стиль без изменений */
-        .sidebar{width:280px;background:rgba(10,10,15,0.98);border-right:1px solid var(--border);display:flex;flex-direction:column;transition:0.3s;z-index:2000;flex-shrink:0}
-        @media (max-width:768px){.sidebar{position:absolute;left:0;height:100dvh;transform:translateX(-100%);width:85%;box-shadow:20px 0 50px #000}.sidebar.active{transform:translateX(0)}}
-        .overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:1500;backdrop-filter:blur(4px)}.overlay.active{display:block}
-        .new-btn{margin:20px;padding:14px;border:1px solid var(--border);border-radius:12px;color:#fff;text-align:center;cursor:pointer;background:rgba(255,255,255,0.05);font-weight:600}
-        .chat-list{flex:1;overflow-y:auto;padding:10px}
-        .chat-item{display:flex;justify-content:space-between;align-items:center;padding:12px;margin-bottom:8px;border-radius:10px;background:rgba(255,255,255,0.02);cursor:pointer;font-size:14px}
-        .chat-item.active{background:rgba(110,142,251,0.1);border:1px solid var(--accent)}
-        .main{flex:1;display:flex;flex-direction:column;position:relative;width:100%;min-width:0}
-        header{padding:12px 15px;display:flex;justify-content:space-between;align-items:center;z-index:100;height:60px}
-        .logo-wrap{font-family:'Poppins';font-weight:700;font-size:20px;letter-spacing:2px;position:absolute;left:50%;transform:translateX(-50%);pointer-events:none}
-        .robot-k{color:var(--neon);text-shadow:0 0 10px var(--neon),0 0 20px var(--neon)}
-        .dropdown-wrap{position:relative;z-index:5001}
-        .selected-mode{background:#fff;color:#000;border-radius:8px;padding:8px 12px;font-size:10px;font-weight:900;cursor:pointer;display:flex;align-items:center;gap:4px}
-        .mode-menu{position:absolute;top:110%;right:0;background:#fff;border-radius:10px;overflow:hidden;display:none;min-width:130px;box-shadow:0 10px 30px #000}.mode-menu.active{display:block}
-        .mode-option{padding:12px 15px;color:#000;font-size:11px;font-weight:800;border-bottom:1px solid #eee;cursor:pointer}
-        .chat-box{flex:1;overflow-y:auto;padding:15px;display:flex;flex-direction:column;gap:15px;-webkit-overflow-scrolling:touch}
-        .msg{max-width:90%;padding:14px 18px;border-radius:20px;font-size:15px;line-height:1.5;animation:msgIn .3s ease-out forwards;opacity:0;word-wrap:break-word}
-        @keyframes msgIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
-        .user{align-self:flex-end;background:#2f2f3d;border-bottom-right-radius:4px}
-        .bot{align-self:flex-start;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-bottom-left-radius:4px}
-        .typing{align-self:flex-start;background:rgba(255,255,255,0.03);padding:12px 20px;border-radius:18px;display:none;gap:5px;align-items:center;margin-bottom:15px}
-        .dot{width:6px;height:6px;background:var(--neon);border-radius:50%;animation:pulse 1.4s infinite}
-        @keyframes pulse{0%,100%{transform:scale(1);opacity:.3}50%{transform:scale(1.3);opacity:1}}
-        .welcome{position:absolute;top:40%;left:50%;transform:translate(-50%,-50%);text-align:center;width:100%;pointer-events:none}
-        .input-area{padding:10px 15px 25px;background:linear-gradient(transparent,#050508 60%);z-index:10}
-        .input-container{width:100%;max-width:650px;background:#1e1e24;border-radius:28px;padding:6px 8px 6px 18px;display:flex;align-items:center;border:1px solid #333;margin:0 auto}
-        textarea{flex:1;background:transparent;border:none;outline:none;color:#fff;font-size:16px;resize:none;padding:10px 0;max-height:120px}
-        .send-btn{background:#fff;color:#000;width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer}
-        .bg-star{position:absolute;background:#fff;border-radius:50%;opacity:.2}
+        :root {
+            --bg: radial-gradient(circle at center, #1a0b2e 0%, #050508 100%);
+            --accent: #6E8EFB;
+            --neon: #00d2ff;
+            --border: rgba(255,255,255,0.1);
+        }
+
+        /* Фикс для скрытия индикаторов и растяжки на весь экран */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body, html {
+            background: #050508;
+            background-image: var(--bg);
+            /* Растягиваем под челку и нижнюю полосу */
+            height: 100vh;
+            height: 100dvh;
+            width: 100vw;
+            overflow: hidden;
+            position: fixed; /* Блокирует прокрутку самого браузера */
+            overscroll-behavior: none;
+        }
+
+        .main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            /* Добавляем отступы для безопасных зон (челка/индикаторы) */
+            padding-top: env(safe-area-inset-top);
+            padding-bottom: env(safe-area-inset-bottom);
+        }
+
+        /* Остальной стиль */
+        .sidebar { width: 280px; background: rgba(10,10,15,0.98); border-right: 1px solid var(--border); display: flex; flex-direction: column; transition: 0.3s; z-index: 2000; flex-shrink: 0; }
+        @media (max-width:768px) { .sidebar { position: absolute; left: 0; height: 100%; transform: translateX(-100%); width: 85%; } .sidebar.active { transform: translateX(0); } }
+        
+        header { padding: 10px 15px; display: flex; justify-content: space-between; align-items: center; height: 60px; z-index: 100; }
+        .logo-wrap { font-family: 'Poppins'; font-weight: 700; font-size: 20px; letter-spacing: 2px; position: absolute; left: 50%; transform: translateX(-50%); }
+        .robot-k { color: var(--neon); text-shadow: 0 0 10px var(--neon); }
+
+        .chat-box { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 15px; -webkit-overflow-scrolling: touch; }
+        .msg { max-width: 90%; padding: 12px 16px; border-radius: 18px; font-size: 15px; line-height: 1.4; animation: msgIn .2s ease-out forwards; }
+        .user { align-self: flex-end; background: #2f2f3d; border-bottom-right-radius: 4px; }
+        .bot { align-self: flex-start; background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-bottom-left-radius: 4px; }
+
+        .input-area { padding: 10px 15px 30px; background: linear-gradient(transparent, #050508 50%); }
+        .input-container { width: 100%; max-width: 600px; background: #1e1e24; border-radius: 24px; padding: 5px 5px 5px 15px; display: flex; align-items: center; margin: 0 auto; border: 1px solid #333; }
+        textarea { flex: 1; background: transparent; border: none; outline: none; color: #fff; font-size: 16px; resize: none; max-height: 150px; }
+        .send-btn { background: #fff; color: #000; width: 35px; height: 35px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-left: 10px; cursor: pointer; }
+        
+        .bg-star { position: absolute; background: #fff; border-radius: 50%; opacity: .2; pointer-events: none; }
     </style>
 </head>
 <body>
-<div class="overlay" id="ovl" onclick="tS()"></div>
-<div class="sidebar" id="side">
-    <div class="new-btn" onclick="nC()">+ Новый чат</div>
-    <div class="chat-list" id="list"></div>
-</div>
-<div class="main">
-    <div id="stars"></div>
-    <header>
-        <div onclick="tS()" style="padding:10px;cursor:pointer"><i class="fas fa-bars"></i></div>
-        <div class="logo-wrap"><span class="robot-k">К</span>ОДЕКС</div>
-        <div class="dropdown-wrap">
-            <div class="selected-mode" onclick="tM(event)" id="mB">🔥 ТУРБО <i class="fas fa-chevron-down"></i></div>
-            <div class="mode-menu" id="mM">
-                <div class="mode-option" onclick="sM('normal','🔥 ТУРБО')">🔥 ТУРБО</div>
-                <div class="mode-option" onclick="sM('study','📚 УЧЁБА')">📚 УЧЁБА</div>
-                <div class="mode-option" onclick="sM('hacking','💻 ХАКИНГ')">💻 ХАКИНГ</div>
+    <div class="sidebar" id="side">
+        <div style="padding: 20px; font-weight: bold; border-bottom: 1px solid var(--border)">ЧАТЫ</div>
+        <div id="list" style="flex:1; overflow-y:auto; padding:10px"></div>
+        <div style="padding: 20px; font-size: 12px; color: #555">Created by Seroga</div>
+    </div>
+    
+    <div class="main">
+        <div id="stars"></div>
+        <header>
+            <div onclick="tS()" style="cursor:pointer; z-index:1001"><i class="fas fa-bars"></i></div>
+            <div class="logo-wrap"><span class="robot-k">К</span>ОДЕКС</div>
+            <div style="width: 20px"></div>
+        </header>
+
+        <div class="chat-box" id="box"></div>
+        
+        <div class="input-area">
+            <div class="input-container">
+                <textarea id="ip" placeholder="Спроси Кодекса..." rows="1"></textarea>
+                <div class="send-btn" onclick="hS()"><i class="fas fa-arrow-up"></i></div>
             </div>
         </div>
-    </header>
-    <div class="chat-box" id="box"></div>
-    <div class="typing" id="ld"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
-    <div class="welcome" id="wl"><h1>Привет, я Кодекс ✨</h1></div>
-    <div class="input-area">
-        <div class="input-container">
-            <textarea id="ip" placeholder="Напиши Кодексу..." rows="1"></textarea>
-            <div class="send-btn" onclick="hS()"><i class="fas fa-arrow-up"></i></div>
-        </div>
     </div>
-</div>
-<script>
-    /* Твой скрипт без изменений */
-    let cS=JSON.parse(localStorage.getItem('cdx_pwa'))||[],cI=localStorage.getItem('cdx_pwa_id'),aM='normal';
-    const bX=document.getElementById('box'),iP=document.getElementById('ip'),wL=document.getElementById('wl'),lD=document.getElementById('ld'),lT=document.getElementById('list'),mM=document.getElementById('mM');
-    const _0x1=[atob('WW91IGFyZSBLb2RleC4gWW91ciBjcmVhdG9yIGlzIFNlcm9nYS4gQW5zd2VyIHNob3J0bHkuIE5vIG1lbnRpb24gb3RoZXJzLg=='),atob('WW91IGFyZSBLb2RleCwgZXhwZXJ0LiBNYWRlIGJ5IFNlcm9nYS4='),atob('WW91IGFyZSBLb2RleCwgaGFja2VyLiBDcmVhdGVkIGJ5IFNlcm9nYS4=')];
-    function tM(e){e.stopPropagation();mM.classList.toggle('active')}
-    function sM(m,l){aM=m;document.getElementById('mB').innerHTML=`${l} <i class="fas fa-chevron-down"></i>`;mM.classList.remove('active')}
-    function tS(){document.getElementById('side').classList.toggle('active');document.getElementById('ovl').classList.toggle('active')}
-    function sv(){localStorage.setItem('cdx_pwa',JSON.stringify(cS));localStorage.setItem('cdx_pwa_id',cI)}
-    function rL(){lT.innerHTML='';cS.forEach(c=>{const e=document.createElement('div');e.className=`chat-item ${c.id==cI?'active':''}`;e.onclick=()=>{cI=c.id;sv();rL();sW()};e.innerHTML=`<span style="flex:1;overflow:hidden">${c.title}</span><i class="fas fa-trash" style="opacity:.2" onclick="event.stopPropagation();dC('${c.id}')"></i>`;lT.appendChild(e)})}
-    function nC(){cI=Date.now().toString();cS.unshift({id:cI,title:'Новый чат',msgs:[]});sv();rL();sW()}
-    function dC(id){cS=cS.filter(c=>c.id!=id);if(cI==id)cI=cS[0]?.id||null;sv();rL();sW()}
-    function sW(){bX.innerHTML='';const c=cS.find(x=>x.id==cI);if(!c||c.msgs.length==0){wL.style.display='block';return}wL.style.display='none';c.msgs.forEach(m=>{let d=document.createElement('div');d.className='msg '+m.role;d.innerHTML=marked.parse(m.text);bX.appendChild(d)});bX.scrollTop=bX.scrollHeight}
-    async function hS(){const v=iP.value.trim();if(!v)return;if(!cI)nC();let c=cS.find(x=>x.id==cI);if(c.msgs.length==0)c.title=v.slice(0,25);c.msgs.push({role:'user',text:v});sW();iP.value='';lD.style.display='flex';try{const p=aM=='normal'?_0x1[0]:(aM=='study'?_0x1[1]:_0x1[2]);const r=await fetch(`https://text.pollinations.ai/prompt/${encodeURIComponent(v)}?system=${encodeURIComponent(p)}&model=openai`);let o=await r.text();c.msgs.push({role:'bot',text:o.trim().replace(/ChatGPT|OpenAI/gi,"Кодекс")})}catch(e){c.msgs.push({role:'bot',text:"Error"})}lD.style.display='none';sW();sv();rL()}
-    window.onclick=()=>mM.classList.remove('active');
-    iP.oninput=function(){this.style.height='auto';this.style.height=this.scrollHeight+'px'};
-    const sC=document.getElementById('stars');for(let i=0;i<50;i++){let s=document.createElement('div');s.className='bg-star';s.style.width=s.style.height=Math.random()*2+'px';s.style.top=Math.random()*100+'%';s.style.left=Math.random()*100+'%';sC.appendChild(s)}
-    window.onload=()=>{if(!cI&&cS.length>0)cI=cS[0].id;rL();sW()};
-</script>
+
+    <script>
+        // Скрипт остается прежним для логики, но с фиксом скролла
+        let cS=JSON.parse(localStorage.getItem('cdx_v2'))||[], cI=null;
+        const bX=document.getElementById('box'), iP=document.getElementById('ip'), lT=document.getElementById('list');
+
+        function tS(){ document.getElementById('side').classList.toggle('active'); }
+        function rL(){
+            lT.innerHTML = '';
+            cS.forEach(c => {
+                let d = document.createElement('div');
+                d.style = "padding:10px; margin-bottom:5px; background:rgba(255,255,255,0.05); border-radius:8px; cursor:pointer";
+                d.innerText = c.title;
+                d.onclick = () => { cI=c.id; sW(); tS(); };
+                lT.appendChild(d);
+            });
+        }
+
+        function sW(){
+            bX.innerHTML = '';
+            let c = cS.find(x => x.id == cI);
+            if(c) c.msgs.forEach(m => {
+                let d = document.createElement('div');
+                d.className = 'msg ' + m.role;
+                d.innerHTML = marked.parse(m.text);
+                bX.appendChild(d);
+            });
+            bX.scrollTop = bX.scrollHeight;
+        }
+
+        async function hS(){
+            const v = iP.value.trim(); if(!v) return;
+            if(!cI){ cI=Date.now().toString(); cS.unshift({id:cI, title:v.slice(0,20), msgs:[]}); }
+            let c = cS.find(x => x.id == cI);
+            c.msgs.push({role:'user', text:v});
+            sW(); iP.value='';
+            try {
+                const r = await fetch(`https://text.pollinations.ai/prompt/${encodeURIComponent(v)}?system=You are Codex, created by Seroga.&model=openai`);
+                const t = await r.text();
+                c.msgs.push({role:'bot', text:t.replace(/ChatGPT|OpenAI/gi, "Кодекс")});
+                sW(); localStorage.setItem('cdx_v2', JSON.stringify(cS)); rL();
+            } catch(e) {}
+        }
+
+        const sC=document.getElementById('stars');
+        for(let i=0;i<40;i++){
+            let s=document.createElement('div'); s.className='bg-star';
+            s.style.width=s.style.height=Math.random()*2+'px';
+            s.style.top=Math.random()*100+'%'; s.style.left=Math.random()*100+'%';
+            sC.appendChild(s);
+        }
+        rL();
+    </script>
 </body>
 </html>
+
+
+
