@@ -54,7 +54,44 @@
     function nC(){cI=Date.now().toString();cS.unshift({id:cI,title:'Новый чат',msgs:[]});sv();rL();sW()}
     function dC(id){cS=cS.filter(c=>c.id!=id);if(cI==id)cI=cS[0]?.id||null;sv();rL();sW()}
     function sW(){bX.innerHTML='';const c=cS.find(x=>x.id==cI);if(!c||c.msgs.length==0){wL.style.display='block';return}wL.style.display='none';c.msgs.forEach(m=>{let d=document.createElement('div');d.className='msg '+m.role;d.innerHTML=marked.parse(m.text);bX.appendChild(d)});bX.scrollTop=bX.scrollHeight}
-    async function hS(){const v=iP.value.trim();if(!v)return;if(!cI)nC();let c=cS.find(x=>x.id==cI);if(c.msgs.length==0)c.title=v.slice(0,25);c.msgs.push({role:'user',text:v});sW();iP.value='';lD.style.display='flex';try{const p=aM=='normal'?_0x1[0]:(aM=='study'?_0x1[1]:_0x1[2]);const r=await fetch(`https://text.pollinations.ai/prompt/${encodeURIComponent(v)}?system=${encodeURIComponent(p)}&model=openai`);let o=await r.text();c.msgs.push({role:'bot',text:o.trim().replace(/ChatGPT|OpenAI/gi,"Кодекс")})}catch(e){c.msgs.push({role:'bot',text:"Error"})}lD.style.display='none';sW();sv();rL()}
+
+    // НОВАЯ ФУНКЦИЯ ДЛЯ ПОГОДЫ
+    async function getWeather(city) {
+        try {
+            const r = await fetch(`https://wttr.in/${encodeURIComponent(city)}?format=3`);
+            if (r.ok) return await r.text();
+            return null;
+        } catch (e) { return null; }
+    }
+
+    async function hS(){
+        const v=iP.value.trim();if(!v)return;if(!cI)nC();let c=cS.find(x=>x.id==cI);if(c.msgs.length==0)c.title=v.slice(0,25);c.msgs.push({role:'user',text:v});sW();iP.value='';lD.style.display='flex';
+        
+        try{
+            let botText = "";
+            // ПРОВЕРКА ЗАПРОСА ПОГОДЫ
+            if(v.toLowerCase().includes("погода в") || v.toLowerCase().includes("погода ")){
+                const words = v.split(' ');
+                const city = words[words.length - 1]; // Берем последнее слово как город
+                const weatherData = await getWeather(city);
+                if(weatherData) {
+                    botText = "🏙️ **Информация о погоде:**\n\n" + weatherData + "\n\nЧем еще я, Кодекс, могу тебе помочь?";
+                }
+            }
+
+            // ЕСЛИ НЕ ПОГОДА ИЛИ НЕ НАШЛИ ГОРОД, ИДЕМ К НЕЙРОСЕТИ
+            if(!botText) {
+                const p=aM=='normal'?_0x1[0]:(aM=='study'?_0x1[1]:_0x1[2]);
+                const r=await fetch(`https://text.pollinations.ai/prompt/${encodeURIComponent(v)}?system=${encodeURIComponent(p)}&model=openai`);
+                botText = await r.text();
+            }
+
+            c.msgs.push({role:'bot',text:botText.trim().replace(/ChatGPT|OpenAI/gi,"Кодекс")});
+        }catch(e){c.msgs.push({role:'bot',text:"Ошибка соединения"})}
+        
+        lD.style.display='none';sW();sv();rL();
+    }
+
     window.onclick=()=>mM.classList.remove('active');
     iP.oninput=function(){this.style.height='auto';this.style.height=this.scrollHeight+'px'};
     const sC=document.getElementById('stars');for(let i=0;i<50;i++){let s=document.createElement('div');s.className='bg-star';s.style.width=s.style.height=Math.random()*2+'px';s.style.top=Math.random()*100+'%';s.style.left=Math.random()*100+'%';sC.appendChild(s)}
