@@ -71,7 +71,13 @@
     
     function dC(id){
         cS=cS.filter(c=>c.id!=id);
-        if(cI==id)cI=cS[0]?.id||null;
+        if(cI==id) {
+            if(cS.length > 0) {
+                cI = cS[0].id;
+            } else {
+                nC(); // Если удалили последний чат, создаем новый сразу
+            }
+        }
         sv();rL();sW()
     }
     
@@ -93,11 +99,8 @@
         const v=iP.value.trim();
         if(!v)return;
         
-        // ИСПРАВЛЕНИЕ: Если ID чата нет или чат не найден в списке, создаем его
-        if(!cI || !cS.find(x=>x.id==cI)){
-            cI=Date.now().toString();
-            cS.unshift({id:cI,title:v.slice(0,25),msgs:[]});
-        }
+        // На случай, если что-то пошло не так, страхуемся
+        if(!cI || !cS.find(x=>x.id==cI)) nC();
         
         let c=cS.find(x=>x.id==cI);
         if(c.msgs.length==0) c.title=v.slice(0,25);
@@ -114,7 +117,7 @@
             let o=await r.text();
             c.msgs.push({role:'bot',text:o.trim().replace(/ChatGPT|OpenAI/gi,"Кодекс")});
         }catch(e){
-            c.msgs.push({role:'bot',text:"Ошибка сети. Попробуй еще раз."});
+            c.msgs.push({role:'bot',text:"Ошибка сети."});
         }
         
         lD.style.display='none';
@@ -125,8 +128,26 @@
     
     window.onclick=()=>mM.classList.remove('active');
     iP.oninput=function(){this.style.height='auto';this.style.height=this.scrollHeight+'px'};
-    const sC=document.getElementById('stars');for(let i=0;i<50;i++){let s=document.createElement('div');s.className='bg-star';s.style.width=s.style.height=Math.random()*2+'px';s.style.top=Math.random()*100+'%';s.style.left=Math.random()*100+'%';sC.appendChild(s)}
-    window.onload=()=>{if(!cI&&cS.length>0)cI=cS[0].id;rL();sW()};
+    
+    // Звезды на фоне
+    const sC=document.getElementById('stars');
+    for(let i=0;i<50;i++){
+        let s=document.createElement('div'); s.className='bg-star';
+        s.style.width=s.style.height=Math.random()*2+'px';
+        s.style.top=Math.random()*100+'%'; s.style.left=Math.random()*100+'%';
+        sC.appendChild(s);
+    }
+
+    // АВТОМАТИЧЕСКОЕ СОЗДАНИЕ ЧАТА ПРИ ЗАПУСКЕ
+    window.onload=()=>{
+        if(cS.length === 0) {
+            nC(); // Если список пуст, создаем первый чат автоматом
+        } else {
+            if(!cI) cI = cS[0].id; // Иначе открываем последний
+            rL(); 
+            sW();
+        }
+    };
 </script>
 </body>
 </html>
