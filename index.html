@@ -46,15 +46,83 @@
     let cS=JSON.parse(localStorage.getItem('cdx_pwa'))||[],cI=localStorage.getItem('cdx_pwa_id'),aM='normal';
     const bX=document.getElementById('box'),iP=document.getElementById('ip'),wL=document.getElementById('wl'),lD=document.getElementById('ld'),lT=document.getElementById('list'),mM=document.getElementById('mM');
     const _0x1=[atob('WW91IGFyZSBLb2RleC4gWW91ciBjcmVhdG9yIGlzIFNlcm9nYS4gQW5zd2VyIHNob3J0bHkuIE5vIG1lbnRpb24gb3RoZXJzLg=='),atob('WW91IGFyZSBLb2RleCwgZXhwZXJ0LiBNYWRlIGJ5IFNlcm9nYS4='),atob('WW91IGFyZSBLb2RleCwgaGFja2VyLiBDcmVhdGVkIGJ5IFNlcm9nYS4=')];
+    
     function tM(e){e.stopPropagation();mM.classList.toggle('active')}
     function sM(m,l){aM=m;document.getElementById('mB').innerHTML=`${l} <i class="fas fa-chevron-down"></i>`;mM.classList.remove('active')}
     function tS(){document.getElementById('side').classList.toggle('active');document.getElementById('ovl').classList.toggle('active')}
     function sv(){localStorage.setItem('cdx_pwa',JSON.stringify(cS));localStorage.setItem('cdx_pwa_id',cI)}
-    function rL(){lT.innerHTML='';cS.forEach(c=>{const e=document.createElement('div');e.className=`chat-item ${c.id==cI?'active':''}`;e.onclick=()=>{cI=c.id;sv();rL();sW()};e.innerHTML=`<span style="flex:1;overflow:hidden">${c.title}</span><i class="fas fa-trash" style="opacity:.2" onclick="event.stopPropagation();dC('${c.id}')"></i>`;lT.appendChild(e)})}
-    function nC(){cI=Date.now().toString();cS.unshift({id:cI,title:'Новый чат',msgs:[]});sv();rL();sW()}
-    function dC(id){cS=cS.filter(c=>c.id!=id);if(cI==id)cI=cS[0]?.id||null;sv();rL();sW()}
-    function sW(){bX.innerHTML='';const c=cS.find(x=>x.id==cI);if(!c||c.msgs.length==0){wL.style.display='block';return}wL.style.display='none';c.msgs.forEach(m=>{let d=document.createElement('div');d.className='msg '+m.role;d.innerHTML=marked.parse(m.text);bX.appendChild(d)});bX.scrollTop=bX.scrollHeight}
-    async function hS(){const v=iP.value.trim();if(!v)return;if(!cI)nC();let c=cS.find(x=>x.id==cI);if(c.msgs.length==0)c.title=v.slice(0,25);c.msgs.push({role:'user',text:v});sW();iP.value='';lD.style.display='flex';try{const p=aM=='normal'?_0x1[0]:(aM=='study'?_0x1[1]:_0x1[2]);const r=await fetch(`https://text.pollinations.ai/prompt/${encodeURIComponent(v)}?system=${encodeURIComponent(p)}&model=openai`);let o=await r.text();c.msgs.push({role:'bot',text:o.trim().replace(/ChatGPT|OpenAI/gi,"Кодекс")})}catch(e){c.msgs.push({role:'bot',text:"Error"})}lD.style.display='none';sW();sv();rL()}
+    
+    function rL(){
+        lT.innerHTML='';
+        cS.forEach(c=>{
+            const e=document.createElement('div');
+            e.className=`chat-item ${c.id==cI?'active':''}`;
+            e.onclick=()=>{cI=c.id;sv();rL();sW()};
+            e.innerHTML=`<span style="flex:1;overflow:hidden">${c.title}</span><i class="fas fa-trash" style="opacity:.2" onclick="event.stopPropagation();dC('${c.id}')"></i>`;
+            lT.appendChild(e)
+        })
+    }
+    
+    function nC(){
+        cI=Date.now().toString();
+        cS.unshift({id:cI,title:'Новый чат',msgs:[]});
+        sv();rL();sW();
+    }
+    
+    function dC(id){
+        cS=cS.filter(c=>c.id!=id);
+        if(cI==id)cI=cS[0]?.id||null;
+        sv();rL();sW()
+    }
+    
+    function sW(){
+        bX.innerHTML='';
+        const c=cS.find(x=>x.id==cI);
+        if(!c||c.msgs.length==0){wL.style.display='block';return}
+        wL.style.display='none';
+        c.msgs.forEach(m=>{
+            let d=document.createElement('div');
+            d.className='msg '+m.role;
+            d.innerHTML=marked.parse(m.text);
+            bX.appendChild(d)
+        });
+        bX.scrollTop=bX.scrollHeight
+    }
+    
+    async function hS(){
+        const v=iP.value.trim();
+        if(!v)return;
+        
+        // ИСПРАВЛЕНИЕ: Если ID чата нет или чат не найден в списке, создаем его
+        if(!cI || !cS.find(x=>x.id==cI)){
+            cI=Date.now().toString();
+            cS.unshift({id:cI,title:v.slice(0,25),msgs:[]});
+        }
+        
+        let c=cS.find(x=>x.id==cI);
+        if(c.msgs.length==0) c.title=v.slice(0,25);
+        
+        c.msgs.push({role:'user',text:v});
+        sW();
+        iP.value='';
+        iP.style.height='auto';
+        lD.style.display='flex';
+        
+        try{
+            const p=aM=='normal'?_0x1[0]:(aM=='study'?_0x1[1]:_0x1[2]);
+            const r=await fetch(`https://text.pollinations.ai/prompt/${encodeURIComponent(v)}?system=${encodeURIComponent(p)}&model=openai`);
+            let o=await r.text();
+            c.msgs.push({role:'bot',text:o.trim().replace(/ChatGPT|OpenAI/gi,"Кодекс")});
+        }catch(e){
+            c.msgs.push({role:'bot',text:"Ошибка сети. Попробуй еще раз."});
+        }
+        
+        lD.style.display='none';
+        sW();
+        sv();
+        rL();
+    }
+    
     window.onclick=()=>mM.classList.remove('active');
     iP.oninput=function(){this.style.height='auto';this.style.height=this.scrollHeight+'px'};
     const sC=document.getElementById('stars');for(let i=0;i<50;i++){let s=document.createElement('div');s.className='bg-star';s.style.width=s.style.height=Math.random()*2+'px';s.style.top=Math.random()*100+'%';s.style.left=Math.random()*100+'%';sC.appendChild(s)}
