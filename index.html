@@ -82,9 +82,9 @@
     const bX=document.getElementById('box'),iP=document.getElementById('ip'),wL=document.getElementById('wl'),lD=document.getElementById('ld'),lT=document.getElementById('list'),mM=document.getElementById('mM');
 
     const _0x1 = [
-        "Ты Кодекс, мощный ИИ от Seroga. Твой стиль: краткость, точность. Если юзер пишет 'макс', отвечай по контексту чата. Не пиши рекламу. Только русский.",
-        "Ты Кодекс-Учитель. Помогай Seroga. Разъясняй темы доступно. Только русский.",
-        "Ты Кодекс-Хакер. Твой создатель Seroga. Будь дерзким и техничным. Только русский."
+        "Ты Кодекс, ИИ от Seroga. Кратко, по делу, на русском. Если юзер пишет 'макс' после темы мессенджеров - отвечай про мессенджеры.",
+        "Ты Кодекс-Учитель. Помогай Seroga в обучении. Русский язык.",
+        "Ты Кодекс-Хакер. Твой создатель Seroga. Технический стиль. Русский язык."
     ];
 
     function tM(e){e.stopPropagation();mM.classList.toggle('active')}
@@ -126,7 +126,7 @@
         if(!cI)nC();
         let c=cS.find(x=>x.id==cI);
         
-        if(c.msgs.length==0)c.title=v.slice(0,25);
+        if(c.msgs.length==0)c.title=v.slice(0,20);
         c.msgs.push({role:'user',text:v});
         sW();
         iP.value='';
@@ -135,29 +135,22 @@
 
         try {
             const sys = aM=='normal'?_0x1[0]:(aM=='study'?_0x1[1]:_0x1[2]);
-            // Берем последние 6 сообщений для контекста
-            const history = c.msgs.slice(-6).map(m => `${m.role=='user'?'User':'Assistant'}: ${m.text}`).join('\n');
-            
-            // Формируем стабильный запрос
-            const url = `https://text.pollinations.ai/prompt/${encodeURIComponent(v)}?system=${encodeURIComponent(sys + "\n\nИстория:\n" + history)}&model=openai`;
+            const history = c.msgs.slice(-4).map(m => `${m.role=='user'?'U':'A'}: ${m.text}`).join('\n');
+            const prompt = `System: ${sys}\nContext: ${history}\nUser: ${v}`;
 
-            const r = await fetch(url);
-            if(!r.ok) throw new Error();
+            // Используем Mistral для стабильности
+            const r = await fetch(`https://text.pollinations.ai/prompt/${encodeURIComponent(prompt)}?model=mistral`);
+            if(!r.ok) throw new Error('Ошибка сервера');
             
             let o = await r.text();
             
-            // Чистка рекламы и системного мусора
-            let clean = o.trim();
-            const badStrings = ["Support Pollinations", "🌸", "Powered by", "Ad:", "Prompt:"];
-            badStrings.forEach(s => {
-                let idx = clean.indexOf(s);
-                if(idx !== -1) clean = clean.substring(0, idx);
-            });
-            clean = clean.replace(/ChatGPT|OpenAI|GPT-4/gi, "Кодекс").trim();
+            // Фильтр мусора
+            let clean = o.split("Support Pollinations")[0].split("🌸")[0].trim();
+            clean = clean.replace(/ChatGPT|OpenAI|GPT-4/gi, "Кодекс");
 
-            c.msgs.push({role:'bot', text: clean || "На связи, Серёга."});
+            c.msgs.push({role:'bot', text: clean || "Я тут, Серёга."});
         } catch(e) {
-            c.msgs.push({role:'bot', text: "Ошибка связи. Проверь инет!"});
+            c.msgs.push({role:'bot', text: "❌ Ошибка соединения. Попробуй ещё раз."});
         }
         
         lD.style.display='none';
