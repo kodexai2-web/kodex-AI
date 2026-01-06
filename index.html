@@ -46,11 +46,11 @@
     let cS=JSON.parse(localStorage.getItem('cdx_pwa'))||[],cI=localStorage.getItem('cdx_pwa_id'),aM='normal';
     const bX=document.getElementById('box'),iP=document.getElementById('ip'),wL=document.getElementById('wl'),lD=document.getElementById('ld'),lT=document.getElementById('list'),mM=document.getElementById('mM');
     
-    // Системные роли (я добавил инструкцию про контекст и русский язык)
+    // Улучшенные системные роли для понимания контекста
     const _0x1=[
-        "Ты Кодекс, ИИ созданный Seroga. Отвечай кратко, технично, всегда учитывай историю сообщений. Только на русском.",
-        "Ты Кодекс, эксперт в обучении. Помогай пользователю Seroga учиться. Только русский язык.",
-        "Ты Кодекс, хакер-помощник. Стиль агрессивный, краткий, технический. Создатель Seroga."
+        "Ты Кодекс, мощный ИИ от Seroga. Ты эксперт. Если контекст о мессенджерах, отвечай про них, а не про математику. Не пиши рекламу. Только русский.",
+        "Ты Кодекс-Учитель. Помогай Seroga разбираться в темах. Будь точен. Только русский.",
+        "Ты Кодекс-Хакер. Краткий, дерзкий, технический стиль. Создатель Seroga. Только русский."
     ];
 
     function tM(e){e.stopPropagation();mM.classList.toggle('active')}
@@ -101,23 +101,26 @@
         try{
             const sys = aM=='normal'?_0x1[0]:(aM=='study'?_0x1[1]:_0x1[2]);
             
-            // Сборка истории для контекста
-            const history = c.msgs.slice(-8).map(m => `${m.role=='user'?'User':'Assistant'}: ${m.text}`).join('\n');
-            const fullPrompt = `${sys}\n\nИстория:\n${history}\nAssistant:`;
+            // История сообщений (глубина 10)
+            const history = c.msgs.slice(-10).map(m => `${m.role=='user'?'User':'Assistant'}: ${m.text}`).join('\n');
+            const fullPrompt = `${sys}\n\nКонтекст беседы:\n${history}\n\nUser: ${v}\nAssistant (без рекламы, на русском):`;
 
             const r=await fetch(`https://text.pollinations.ai/prompt/${encodeURIComponent(fullPrompt)}?model=openai`);
             let o=await r.text();
             
-            // Мощная очистка от рекламы и промптов
-            let clean = o.trim()
-                .replace(/Support Pollinations\.AI:[\s\S]*/gi, "") 
-                .replace(/🌸[\s\S]*/gi, "")
-                .replace(/Prompt:[\s\S]*?\n/gi, "")
-                .replace(/ChatGPT|OpenAI|GPT-4/gi,"Кодекс");
+            // УЛЬТРА-ОЧИСТКА ОТ РЕКЛАМЫ И МУСОРА
+            let clean = o.trim();
+            const bad = ["Support Pollinations", "🌸", "Powered by", "Ad:", "Prompt:"];
+            bad.forEach(b => {
+                let idx = clean.indexOf(b);
+                if(idx !== -1) clean = clean.substring(0, idx);
+            });
 
-            c.msgs.push({role:'bot',text:clean || "Я на связи, Серёга. Что дальше?"});
+            clean = clean.replace(/ChatGPT|OpenAI|GPT-4/gi, "Кодекс").trim();
+
+            c.msgs.push({role:'bot',text:clean || "Я на связи."});
         }catch(e){
-            c.msgs.push({role:'bot',text:"Ошибка сети. Попробуй еще раз."})
+            c.msgs.push({role:'bot',text:"Ошибка. Проверь интернет, Серёга."})
         }
         
         lD.style.display='none';
