@@ -44,25 +44,38 @@
     </div>
 </div>
 <script>
-    let cS=JSON.parse(localStorage.getItem('cdx_pwa'))||[],cI=localStorage.getItem('cdx_pwa_id'),aM='normal';
+    let cS=JSON.parse(localStorage.getItem('cdx_pwa'))||[],cI=localStorage.getItem('cdx_pwa_id'),aM='normal',isVoiceMode=false;
     const bX=document.getElementById('box'),iP=document.getElementById('ip'),wL=document.getElementById('wl'),lD=document.getElementById('ld'),lT=document.getElementById('list'),mM=document.getElementById('mM'),mB=document.getElementById('mic');
     const _0x1=[atob('WW91IGFyZSBLb2RleC4gWW91ciBjcmVhdG9yIGlzIFNlcm9nYS4gQW5zd2VyIHNob3J0bHkuIE5vIG1lbnRpb24gb3RoZXJzLg=='),atob('WW91IGFyZSBLb2RleCwgZXhwZXJ0LiBNYWRlIGJ5IFNlcm9nYS4='),atob('WW91IGFyZSBLb2RleCwgaGFja2VyLiBDcmVhdGVkIGJ5IFNlcm9nYS4=')];
 
-    // Голосовой движок
-    const recognition = window.SpeechRecognition || window.webkitSpeechRecognition ? new (window.SpeechRecognition || window.webkitSpeechRecognition)() : null;
-    if(recognition) { recognition.lang = 'ru-RU'; recognition.onresult = (e) => { iP.value = e.results[0][0].transcript; tV(); hS(); } }
+    const recognition = (window.SpeechRecognition || window.webkitSpeechRecognition) ? new (window.SpeechRecognition || window.webkitSpeechRecognition)() : null;
+    if(recognition) { 
+        recognition.lang = 'ru-RU'; 
+        recognition.onresult = (e) => { 
+            iP.value = e.results[0][0].transcript; 
+            isVoiceMode = true; // Включаем голос только после микрофона
+            tV(); hS(); 
+        } 
+    }
     
     function tV(){
         if(!recognition) return alert("Голосовой ввод не поддерживается");
         mB.classList.toggle('active');
-        mB.classList.contains('active') ? recognition.start() : recognition.stop();
+        if(mB.classList.contains('active')) {
+            window.speechSynthesis.cancel();
+            recognition.start();
+        } else {
+            recognition.stop();
+        }
     }
 
     function speak(t){
+        if(!isVoiceMode) return; // Не говорить, если не был нажат микрофон
         const s = window.speechSynthesis;
         const u = new SpeechSynthesisUtterance(t.replace(/[#*`]/g,''));
         u.lang = 'ru-RU';
         s.cancel(); s.speak(u);
+        isVoiceMode = false; // Сбрасываем режим после озвучки
     }
 
     function tM(e){e.stopPropagation();mM.classList.toggle('active')}
@@ -91,9 +104,10 @@
             let o=await r.text();
             let clean = o.trim().replace(/ChatGPT|OpenAI/gi,"Кодекс");
             c.msgs.push({role:'bot',text:clean});
-            speak(clean); // Авто-озвучка ответа
+            if(isVoiceMode) speak(clean); 
         }catch(e){
-            c.msgs.push({role:'bot',text:"Error"})
+            c.msgs.push({role:'bot',text:"Error"});
+            isVoiceMode = false;
         }
         lD.style.display='none';
         sW();
