@@ -77,11 +77,7 @@
             const history = c.msgs.slice(-15).map(m => `${m.role === 'user' ? 'User' : 'Assistant'}: ${m.text}`).join('\n');
             const r=await fetch(`https://text.pollinations.ai/prompt/${encodeURIComponent(history)}?system=${encodeURIComponent(p)}&model=openai`);
             let o=await r.text();
-            
-            // Добавляем упоминание компании в конец ответа
-            let finalMsg = o.trim().replace(/ChatGPT|OpenAI/gi,"Кодекс") + "\n\n**Компания K-KODEX**";
-            
-            c.msgs.push({role:'bot',text:finalMsg});
+            c.msgs.push({role:'bot',text:o.trim().replace(/ChatGPT|OpenAI/gi,"Кодекс")});
         } catch(e) {
             c.msgs.push({role:'bot',text:"Error"})
         }
