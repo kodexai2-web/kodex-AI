@@ -46,7 +46,7 @@
     let cS=JSON.parse(localStorage.getItem('cdx_pwa'))||[],cI=localStorage.getItem('cdx_pwa_id'),aM='normal';
     const bX=document.getElementById('box'),iP=document.getElementById('ip'),wL=document.getElementById('wl'),lD=document.getElementById('ld'),lT=document.getElementById('list'),mM=document.getElementById('mM');
     
-    // Промпты без упоминания создателей
+    // Чистые промпты
     const _0x1=[
         atob('WW91IGFyZSBLb2RleC4gQW5zd2VyIHNob3J0bHku'),
         atob('WW91IGFyZSBLb2RleCwgZXhwZXJ0Lg=='),
@@ -78,7 +78,7 @@
             const r=await fetch(`https://text.pollinations.ai/prompt/${encodeURIComponent(history)}?system=${encodeURIComponent(p)}&model=openai`);
             let o=await r.text();
             
-            // Здесь больше нет добавления "Компания K-KODEX"
+            // ВНИМАНИЕ: Здесь больше нет никакого добавления текста "Компания K-KODEX"
             let finalMsg = o.trim().replace(/ChatGPT|OpenAI/gi,"Кодекс");
             
             c.msgs.push({role:'bot',text:finalMsg});
