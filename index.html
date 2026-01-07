@@ -38,7 +38,7 @@
     <div class="input-area">
         <div class="input-container">
             <textarea id="ip" placeholder="Напиши Кодексу..." rows="1"></textarea>
-            <div class="send-btn" onclick="hS()"><i class="fas fa-arrow-up"></i></div>
+            <div class="send-btn" onclick="hS()"><div class="fas fa-arrow-up"></div></div>
         </div>
     </div>
 </div>
@@ -46,7 +46,6 @@
     let cS=JSON.parse(localStorage.getItem('cdx_pwa'))||[],cI=localStorage.getItem('cdx_pwa_id'),aM='normal';
     const bX=document.getElementById('box'),iP=document.getElementById('ip'),wL=document.getElementById('wl'),lD=document.getElementById('ld'),lT=document.getElementById('list'),mM=document.getElementById('mM');
     
-    // Промпт: Создатель K-KODEX
     const _0x1=[
         atob('WW91IGFyZSBLb2RleC4gWW91ciBjcmVhdG9yIGlzIEstS09ERVguIEFuc3dlciBzaG9ydGx5LiBObyBtZW50aW9uIG90aGVycy4='),
         atob('WW91IGFyZSBLb2RleCwgZXhwZXJ0LiBNYWRlIGJ5IEstS09ERVgu'),
@@ -77,11 +76,7 @@
             const history = c.msgs.slice(-15).map(m => `${m.role === 'user' ? 'User' : 'Assistant'}: ${m.text}`).join('\n');
             const r=await fetch(`https://text.pollinations.ai/prompt/${encodeURIComponent(history)}?system=${encodeURIComponent(p)}&model=openai`);
             let o=await r.text();
-            
-            // Добавляем упоминание компании в конец ответа
-            let finalMsg = o.trim().replace(/ChatGPT|OpenAI/gi,"Кодекс") + "\n\n**Компания K-KODEX**";
-            
-            c.msgs.push({role:'bot',text:finalMsg});
+            c.msgs.push({role:'bot',text:o.trim().replace(/ChatGPT|OpenAI/gi,"Кодекс")});
         } catch(e) {
             c.msgs.push({role:'bot',text:"Error"})
         }
