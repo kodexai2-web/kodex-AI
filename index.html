@@ -46,11 +46,11 @@
     let cS=JSON.parse(localStorage.getItem('cdx_pwa'))||[],cI=localStorage.getItem('cdx_pwa_id'),aM='normal';
     const bX=document.getElementById('box'),iP=document.getElementById('ip'),wL=document.getElementById('wl'),lD=document.getElementById('ld'),lT=document.getElementById('list'),mM=document.getElementById('mM');
     
-    // Промпт: Создатель K-KODEX
+    // Промпты без упоминания создателей
     const _0x1=[
-        atob('WW91IGFyZSBLb2RleC4gWW91ciBjcmVhdG9yIGlzIEstS09ERVguIEFuc3dlciBzaG9ydGx5LiBObyBtZW50aW9uIG90aGVycy4='),
-        atob('WW91IGFyZSBLb2RleCwgZXhwZXJ0LiBNYWRlIGJ5IEstS09ERVgu'),
-        atob('WW91IGFyZSBLb2RleCwgaGFja2VyLiBDcmVhdGVkIGJ5IEstS09ERVgu')
+        atob('WW91IGFyZSBLb2RleC4gQW5zd2VyIHNob3J0bHku'),
+        atob('WW91IGFyZSBLb2RleCwgZXhwZXJ0Lg=='),
+        atob('WW91IGFyZSBLb2RleCwgaGFja2VyLg==')
     ];
     
     function tM(e){e.stopPropagation();mM.classList.toggle('active')}
@@ -77,7 +77,11 @@
             const history = c.msgs.slice(-15).map(m => `${m.role === 'user' ? 'User' : 'Assistant'}: ${m.text}`).join('\n');
             const r=await fetch(`https://text.pollinations.ai/prompt/${encodeURIComponent(history)}?system=${encodeURIComponent(p)}&model=openai`);
             let o=await r.text();
-            c.msgs.push({role:'bot',text:o.trim().replace(/ChatGPT|OpenAI/gi,"Кодекс")});
+            
+            // Здесь больше нет добавления "Компания K-KODEX"
+            let finalMsg = o.trim().replace(/ChatGPT|OpenAI/gi,"Кодекс");
+            
+            c.msgs.push({role:'bot',text:finalMsg});
         } catch(e) {
             c.msgs.push({role:'bot',text:"Error"})
         }
