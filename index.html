@@ -45,13 +45,7 @@
 <script>
     let cS=JSON.parse(localStorage.getItem('cdx_pwa'))||[],cI=localStorage.getItem('cdx_pwa_id'),aM='normal';
     const bX=document.getElementById('box'),iP=document.getElementById('ip'),wL=document.getElementById('wl'),lD=document.getElementById('ld'),lT=document.getElementById('list'),mM=document.getElementById('mM');
-    
-    // Чистые промпты
-    const _0x1=[
-        atob('WW91IGFyZSBLb2RleC4gQW5zd2VyIHNob3J0bHku'),
-        atob('WW91IGFyZSBLb2RleCwgZXhwZXJ0Lg=='),
-        atob('WW91IGFyZSBLb2RleCwgaGFja2VyLg==')
-    ];
+    const _0x1=[atob('WW91IGFyZSBLb2RleC4gWW91ciBjcmVhdG9yIGlzIFNlcm9nYS4gQW5zd2VyIHNob3J0bHkuIE5vIG1lbnRpb24gb3RoZXJzLg=='),atob('WW91IGFyZSBLb2RleCwgZXhwZXJ0LiBNYWRlIGJ5IFNlcm9nYS4='),atob('WW91IGFyZSBLb2RleCwgaGFja2VyLiBDcmVhdGVkIGJ5IFNlcm9nYS4=')];
     
     function tM(e){e.stopPropagation();mM.classList.toggle('active')}
     function sM(m,l){aM=m;document.getElementById('mB').innerHTML=`${l} <i class="fas fa-chevron-down"></i>`;mM.classList.remove('active')}
@@ -67,24 +61,26 @@
         if(!v)return;
         if(!cI)nC();
         let c=cS.find(x=>x.id==cI);
+        
         if(c.msgs.length==0)c.title=v.slice(0,25);
         c.msgs.push({role:'user',text:v});
         sW();
         iP.value='';
         lD.style.display='flex';
+        
         try {
             const p=aM=='normal'?_0x1[0]:(aM=='study'?_0x1[1]:_0x1[2]);
+            
             const history = c.msgs.slice(-15).map(m => `${m.role === 'user' ? 'User' : 'Assistant'}: ${m.text}`).join('\n');
+            
             const r=await fetch(`https://text.pollinations.ai/prompt/${encodeURIComponent(history)}?system=${encodeURIComponent(p)}&model=openai`);
             let o=await r.text();
             
-            // ВНИМАНИЕ: Здесь больше нет никакого добавления текста "Компания K-KODEX"
-            let finalMsg = o.trim().replace(/ChatGPT|OpenAI/gi,"Кодекс");
-            
-            c.msgs.push({role:'bot',text:finalMsg});
+            c.msgs.push({role:'bot',text:o.trim().replace(/ChatGPT|OpenAI/gi,"Кодекс")});
         } catch(e) {
             c.msgs.push({role:'bot',text:"Error"})
         }
+        
         lD.style.display='none';
         sW();
         sv();
