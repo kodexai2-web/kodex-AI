@@ -45,7 +45,13 @@
 <script>
     let cS=JSON.parse(localStorage.getItem('cdx_pwa'))||[],cI=localStorage.getItem('cdx_pwa_id'),aM='normal';
     const bX=document.getElementById('box'),iP=document.getElementById('ip'),wL=document.getElementById('wl'),lD=document.getElementById('ld'),lT=document.getElementById('list'),mM=document.getElementById('mM');
-    const _0x1=[atob('WW91IGFyZSBLb2RleC4gWW91ciBjcmVhdG9yIGlzIFNlcm9nYS4gQW5zd2VyIHNob3J0bHkuIE5vIG1lbnRpb24gb3RoZXJzLg=='),atob('WW91IGFyZSBLb2RleCwgZXhwZXJ0LiBNYWRlIGJ5IFNlcm9nYS4='),atob('WW91IGFyZSBLb2RleCwgaGFja2VyLiBDcmVhdGVkIGJ5IFNlcm9nYS4=')];
+    
+    // Обновленные промпты с жестким требованием русского языка
+    const _0x1=[
+        atob('WW91IGFyZSBLb2RleC4gWW91ciBjcmVhdG9yIGlzIFNlcm9nYS4gQU5TV0VSIE9OTFkgSU4gUlVTU0lBTi4gU2hvcnQgcmVzcG9uc2VzLg=='), // Кодекс. Создатель Серега. Ответ только на русском. Коротко.
+        atob('WW91IGFyZSBLb2RleCwgZXhwZXJ0LiBNYWRlIGJ5IFNlcm9nYS4gQU5TV0VSIE9OTFkgSU4gUlVTU0lBTi4='), // Кодекс эксперт. Создатель Серега. Ответ только на русском.
+        atob('WW91IGFyZSBLb2RleCwgaGFja2VyLiBDcmVhdGVkIGJ5IFNlcm9nYS4gQU5TV0VSIE9OTFkgSU4gUlVTU0lBTi4=') // Кодекс хакер. Создатель Серега. Ответ только на русском.
+    ];
     
     function tM(e){e.stopPropagation();mM.classList.toggle('active')}
     function sM(m,l){aM=m;document.getElementById('mB').innerHTML=`${l} <i class="fas fa-chevron-down"></i>`;mM.classList.remove('active')}
@@ -70,15 +76,13 @@
         
         try {
             const p=aM=='normal'?_0x1[0]:(aM=='study'?_0x1[1]:_0x1[2]);
-            
             const history = c.msgs.slice(-15).map(m => `${m.role === 'user' ? 'User' : 'Assistant'}: ${m.text}`).join('\n');
-            
             const r=await fetch(`https://text.pollinations.ai/prompt/${encodeURIComponent(history)}?system=${encodeURIComponent(p)}&model=openai`);
             let o=await r.text();
             
             c.msgs.push({role:'bot',text:o.trim().replace(/ChatGPT|OpenAI/gi,"Кодекс")});
         } catch(e) {
-            c.msgs.push({role:'bot',text:"Error"})
+            c.msgs.push({role:'bot',text:"Ошибка соединения"})
         }
         
         lD.style.display='none';
